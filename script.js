@@ -66,7 +66,7 @@ window.onYouTubeIframeAPIReady = function() {
   }
 };
 
-// ===== MOBILE AUDIO ENGINE UNLOCKER =====
+// ===== MOBILE AUDIO ENGINE UNLOCKER (100% AD-FREE) =====
 function unlockAudioEngine() {
   if (audioEngineUnlocked) return;
   audioEngineUnlocked = true;
@@ -74,18 +74,14 @@ function unlockAudioEngine() {
   const bgAudio = document.getElementById("bg-audio-fallback");
   if (bgAudio) {
     bgAudio.play().then(() => {
-      if (isYtReady && ytPlayer && typeof ytPlayer.playVideo === "function") {
-        bgAudio.pause();
-        ytPlayer.playVideo();
-      }
+      isPlaying = true;
+      updateMusicUI(true);
     }).catch(() => {
       if (isYtReady && ytPlayer && typeof ytPlayer.playVideo === "function") {
         ytPlayer.playVideo();
       }
     });
-  }
-
-  if (isYtReady && ytPlayer && typeof ytPlayer.playVideo === "function") {
+  } else if (isYtReady && ytPlayer && typeof ytPlayer.playVideo === "function") {
     ytPlayer.playVideo();
     isPlaying = true;
     updateMusicUI(true);
