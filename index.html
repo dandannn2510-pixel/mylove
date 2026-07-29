@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>🌌 Our Love Space - Dan & Kaimook 💕</title>
+  <meta name="description" content="พื้นที่แห่งความทรงจำความรักของ Dan & Kaimook 💕" />
+  <meta name="theme-color" content="#060913" />
+
+  <!-- Premium Google Fonts for Mobile (Cute Fonts: Itim & Mali) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Itim&family=Mali:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
+    rel="stylesheet" />
+
+  <link rel="icon" href="รูปโลโก้.jpg" type="image/jpeg" />
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- CDN Links for GSAP & YouTube API -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://www.youtube.com/iframe_api"></script>
+</head>
+
+<body>
+
+  <!-- Mobile Frame Container -->
+  <div class="app-frame" id="app-frame">
+
+    <!-- YouTube Audio Player Embed (Hidden Iframe) -->
+    <div id="yt-player-container"
+      style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; left: -9999px;">
+      <iframe id="yt-player" width="1" height="1"
+        src="https://www.youtube.com/embed/cnRtjG6lLHU?enablejsapi=1&autoplay=1&loop=1&playlist=cnRtjG6lLHU&playsinline=1"
+        allow="autoplay; encrypted-media" frameborder="0"></iframe>
+    </div>
+
+    <!-- Ambient Audio Engine Fallback Element -->
+    <audio id="bg-audio-fallback" loop preload="auto"
+      src="https://assets.mixkit.co/music/preview/mixkit-beautiful-dream-preview-583.mp3"></audio>
+
+    <!-- Interactive Night Sky Stars & Fireworks Canvases -->
+    <canvas id="star-canvas" class="ambient-canvas"></canvas>
+    <canvas id="fireworks-canvas" class="fireworks-canvas"></canvas>
+
+    <!-- ===== PASSCODE SCREEN (MOBILE OPTIMIZED) ===== -->
+    <div id="passcode-screen" class="passcode-screen">
+      <div class="passcode-bg-anim"></div>
+      <div class="passcode-box glass-panel glow-card">
+        <div class="lock-avatar-wrap">
+          <div class="lock-avatar-heart glow-card">
+            <img src="รูปโลโก้.jpg" class="lock-logo-img" alt="Dan & Kaimook Logo" />
+          </div>
+        </div>
+        <h2 class="passcode-title gradient-text">ปลดล็อกหัวใจ 🔒</h2>
+        <p class="passcode-hint">ใส่รหัสผ่านวันครบรอบของเรา (0308)</p>
+        <div class="passcode-dots" id="passcode-dots">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+        <div class="passcode-keypad" id="passcode-keypad">
+          <button class="key glass-btn" data-val="1">1</button>
+          <button class="key glass-btn" data-val="2">2</button>
+          <button class="key glass-btn" data-val="3">3</button>
+          <button class="key glass-btn" data-val="4">4</button>
+          <button class="key glass-btn" data-val="5">5</button>
+          <button class="key glass-btn" data-val="6">6</button>
+          <button class="key glass-btn" data-val="7">7</button>
+          <button class="key glass-btn" data-val="8">8</button>
+          <button class="key glass-btn" data-val="9">9</button>
+          <button class="key key-clear glass-btn" data-val="clear">⌫</button>
+          <button class="key glass-btn" data-val="0">0</button>
+          <button class="key key-enter glass-btn" data-val="enter">✓</button>
+        </div>
+        <div id="passcode-error" class="passcode-error hidden">รหัสไม่ถูกต้องนะ ลองใหม่อีกครั้งนะที่รัก 💔</div>
+      </div>
+    </div>
+
+    <!-- ===== MAIN CONTENT APP WRAPPER ===== -->
+    <div id="main-content" class="app-wrapper hidden">
+
+      <!-- ===== TOP HEADER BAR ===== -->
+      <header class="app-header glass-header">
+        <div class="app-header-left gradient-text">
+          <img src="รูปโลโก้.jpg" class="header-logo-img" alt="Logo" /> Dan & Kaimook 💕
+        </div>
+        <div class="app-header-right">
+          <!-- Floating Quick Audio Switcher Button -->
+          <button class="music-mini-btn glass-btn glow-btn" id="music-mini-btn" title="เล่น/หยุดเพลง 🎵">
+            <span class="music-icon" id="header-music-icon">🎵</span>
+            <span class="music-label-text">คู่ชีวิต 💖</span>
+            <div class="audio-eq hidden" id="header-audio-eq">
+              <span class="eq-bar"></span>
+              <span class="eq-bar"></span>
+              <span class="eq-bar"></span>
+            </div>
+          </button>
+        </div>
+      </header>
+
+      <!-- ===== MUSIC PLAYER DRAWER CONSOLE ===== -->
+      <div class="music-drawer hidden" id="music-drawer">
+        <div class="music-drawer-overlay" id="music-drawer-overlay"></div>
+        <div class="music-drawer-content glass-panel">
+          <div class="music-drawer-header">
+            <h3 class="gradient-text">🎵 เพลงของเรา (Dan & Kaimook) 💖</h3>
+            <button class="close-drawer-btn glass-btn" id="close-music-drawer">✕</button>
+          </div>
+          <div class="music-body-console">
+            <!-- Spinning Vinyl disk mockup -->
+            <div class="vinyl-container">
+              <div class="vinyl-disk" id="vinyl-disk">
+                <div class="vinyl-label">
+                  <img src="รูปโลโก้.jpg" class="vinyl-logo-img" alt="Vinyl Logo" />
+                </div>
+              </div>
+              <div class="vinyl-arm" id="vinyl-arm"></div>
+            </div>
+            <!-- Song Title & Equalizer -->
+            <div class="song-meta">
+              <h4 id="song-title" class="gradient-text">ชอบตัวเองตอนอยู่กับเธอ - Billkin 💖</h4>
+              <p id="song-artist">เพลงนี้ทำให้นึกถึงเธอทุกครั้ง</p>
+              <div class="drawer-audio-eq hidden" id="drawer-audio-eq">
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+              </div>
+            </div>
+            <!-- Progress Bar -->
+            <div class="progress-container">
+              <span class="time-label" id="current-time">0:00</span>
+              <input type="range" class="song-progress" id="song-progress" value="0" min="0" max="100" />
+              <span class="time-label" id="total-duration">3:45</span>
+            </div>
+            <!-- Controls buttons -->
+            <div class="playback-controls">
+              <button class="control-btn glass-btn" id="prev-song-btn">⏮️</button>
+              <button class="control-btn play-btn glass-btn glow-btn" id="play-song-btn">▶️</button>
+              <button class="control-btn glass-btn" id="next-song-btn">⏭️</button>
+            </div>
+            <!-- Playlist picker -->
+            <div class="song-playlist">
+              <button class="playlist-item active glass-btn" data-track="0">🎵 เพลงที่ 1: ชอบตัวเองตอนอยู่กับเธอ -
+                Billkin 💖</button>
+              <button class="playlist-item glass-btn" data-track="1">🎵 เพลงที่ 2: คู่ชีวิต - COCKTAIL 🎸</button>
+              <button class="playlist-item glass-btn" data-track="2">🎵 เพลงที่ 3: จังหวะตกหลุมรัก - DIDIxDADA
+                🎵</button>
+              <button class="playlist-item glass-btn" data-track="3">🎵 เพลงที่ 4: ยินดี - Sarah Salola 🌸</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PAGES CONTAINER ===== -->
+      <main class="pages-container">
+
+        <!-- 1. HOME VIEW (HERO & REALTIME COUNTER) -->
+        <div id="page-home" class="app-page active">
+          <div class="page-scroll-content">
+
+            <div class="hero-card glass-panel glow-card">
+              <div class="hero-avatar-wrap">
+                <div class="hero-avatar">
+                  <img src="รูปโลโก้.jpg" class="hero-logo-img" alt="Dan & Kaimook Hero Logo" />
+                </div>
+                <div class="hero-avatar-ring"></div>
+              </div>
+              <div class="hero-badge">🗓️ Happy Anniversary</div>
+              <h1 class="hero-title gradient-text" id="typewriter-hero-title">Dan & Kaimook 💕</h1>
+              <p class="hero-quote">"ทุกวินาทีที่อยู่กับเธอ คือช่วงเวลาที่ดีที่สุดในชีวิต ❤️"</p>
+              <button class="hero-cta-btn glass-btn glow-btn" id="hero-start-journey-btn">เริ่มต้นการเดินทางของเรา
+                ✨</button>
+            </div>
+
+            <!-- ROMANTIC TICKER BANNER -->
+            <div class="quote-ticker-wrap glass-panel">
+              <div class="quote-ticker" id="quote-ticker">
+                <span>💕 ครบรอบ 2 ปี รักคนดีไม่เปลี่ยนไป จุ๊บม่วฟฟฟฟฟฟ 🥰 ✨ Dan & Kaimook ❤️ อยู่ด้วยกันนานๆ นะที่รัก 🌙
+                  ครบรอบ 2 ปี รักคนดีไม่เปลี่ยนไป จุ๊บม่วฟฟฟฟฟฟ 💖</span>
+              </div>
+            </div>
+
+            <!-- REALTIME LOVE COUNTER -->
+            <div class="love-timer glass-panel glow-card">
+              <div class="timer-label gradient-text">❤️ เราคบกันมา (Real-time Counter)</div>
+              <div class="timer-boxes">
+                <div class="timer-box glass-panel">
+                  <span class="timer-num gradient-gold" id="t-years">0</span>
+                  <span class="timer-unit">ปี</span>
+                </div>
+                <div class="timer-box glass-panel">
+                  <span class="timer-num gradient-gold" id="t-months">0</span>
+                  <span class="timer-unit">เดือน</span>
+                </div>
+                <div class="timer-box glass-panel">
+                  <span class="timer-num gradient-gold" id="t-days">0</span>
+                  <span class="timer-unit">วัน</span>
+                </div>
+                <div class="timer-box glass-panel">
+                  <span class="timer-num gradient-gold" id="t-hours">00</span>
+                  <span class="timer-unit">ชม.</span>
+                </div>
+                <div class="timer-box glass-panel">
+                  <span class="timer-num gradient-gold" id="t-mins">00</span>
+                  <span class="timer-unit">นาที</span>
+                </div>
+                <div class="timer-box glass-panel">
+                  <span class="timer-num gradient-gold" id="t-secs">00</span>
+                  <span class="timer-unit">วิ</span>
+                </div>
+              </div>
+              <div class="timer-start-date">📅 วันที่เริ่มคบกัน: 3 สิงหาคม 2567 (2024)</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 2. TIMELINE VIEW (PARALLAX MEMORY STORY) -->
+        <div id="page-timeline" class="app-page">
+          <div class="page-scroll-content">
+            <div class="section-header">
+              <span class="section-badge">📅</span>
+              <h2 class="section-title gradient-text">เรื่องราวของเรา</h2>
+              <p class="section-sub">แตะการ์ดแต่ละใบเพื่อดูความทรงจำหวานๆ 💖</p>
+            </div>
+
+            <div class="timeline">
+              <div class="timeline-item left">
+                <div class="timeline-dot">💬</div>
+                <div class="timeline-card glass-panel glow-card" data-title="วันแรกที่คุยในแชท 💬"
+                  data-date="15 พฤษภาคม 2567"
+                  data-desc="ใครหว้าทักแชทเรามาาา เด็กที่ไหนก็ไม่รู้ อันนี้ใช่แดนป่ะเนี่ย 😂💕 จุดเริ่มต้นของบทสนทนาแสนน่ารัก">
+                  <div class="tl-moment-img" id="tl-img-1">
+                    <img src="วันแรกที่คุย.jpg" alt="วันแรกที่คุย" style="width:100%;height:100%;object-fit:cover;" />
+                  </div>
+                  <div class="tl-date">15 พฤษภาคม 2567</div>
+                  <h3>วันแรกที่คุยในแชท 💬</h3>
+                  <p>ใครหว้าทักแชทมา... จุดเริ่มต้นของเรา 🥰</p>
+                </div>
+              </div>
+              <div class="timeline-item right">
+                <div class="timeline-dot">💝</div>
+                <div class="timeline-card glass-panel glow-card" data-title="วันที่บอกชอบ 💝"
+                  data-date="ช่วงเตะบอลสนาม ⚽"
+                  data-desc="วันนั้นน่าจะเตะบอลอยู่ แล้วก็มีคนถามว่า 'มีไรจะบอกมั้ย' มั้งงงง 🤭 ตื่นเต้นจนทำตัวไม่ถูกเลย"
+                  data-img="moment2">
+                  <div class="tl-moment-img" id="tl-img-2">
+                    <div class="tl-img-placeholder">💝<span>หารูปไม่เจออ่าา 🥺</span></div>
+                  </div>
+                  <div class="tl-date">ช่วงนั้นแหละ 🥹</div>
+                  <h3>วันที่บอกชอบ 💝</h3>
+                  <p>มีไรจะบอกมั้ยมั้งงง ใครบอกก่อนกันน้า 🤭</p>
+                </div>
+              </div>
+              <div class="timeline-item left">
+                <div class="timeline-dot">📸</div>
+                <div class="timeline-card glass-panel glow-card" data-title="รูปคู่รูปแรก 📸" data-date="วันกีฬาสี ✨"
+                  data-desc="วันกีฬาสีแสนประทับใจ วันนั้นแหละที่เปิดตัวว่าคบกันอย่างเป็นทางการให้โลกรู้ 😏📸"
+                  data-img="moment3">
+                  <div class="tl-moment-img" id="tl-img-3">
+                    <img src="รูปคู่รูปแรก.jpg" alt="รูปคู่รูปแรก" style="width:100%;height:100%;object-fit:cover;" />
+                  </div>
+                  <div class="tl-date">วันกีฬาสี ✨</div>
+                  <h3>รูปคู่รูปแรก 📸</h3>
+                  <p>วันเปิดตัวให้โลกรู้ว่าคบกันแล้วนะ 😏</p>
+                </div>
+              </div>
+              <div class="timeline-item right">
+                <div class="timeline-dot">💑</div>
+                <div class="timeline-card glass-panel glow-card" data-title="วันตกลงคบกัน 💑" data-date="3 สิงหาคม 2567"
+                  data-desc="วันนั้นถ้าจำไม่ผิดเค้าใส่เสื้อสีม่วง แล้วก็ไปเดินเล่นกัน วันที่เสื้อสีม่วงเปลี่ยนชีวิตเราสองคนไปตลอดกาล 💜"
+                  data-img="moment4">
+                  <div class="tl-moment-img" id="tl-img-4">
+                    <img src="วันที่คบ.jpg" alt="วันที่คบ" style="width:100%;height:100%;object-fit:cover;" />
+                  </div>
+                  <div class="tl-date">3 สิงหาคม 2567 💜</div>
+                  <h3>วันตกลงคบกัน 💑</h3>
+                  <p>วันที่เสื้อสีม่วงเปลี่ยนชีวิต 💜</p>
+                </div>
+              </div>
+              <div class="timeline-item left">
+                <div class="timeline-dot">🎤</div>
+                <div class="timeline-card glass-panel glow-card" data-title="คอนเสิร์ตแรกของเรา 🎤"
+                  data-date="30 สิงหาคม 2567"
+                  data-desc="คอนเสิร์ตแรกที่ได้ดูด้วยกัน แถมมีเค้าขึ้นไปเล่นด้วย อิอิ ความทรงจำเสียงเพลงแสนพิเศษ 🎵"
+                  data-img="moment5">
+                  <div class="tl-moment-img" id="tl-img-5">
+                    <img src="คอนแรก.jpg" alt="คอนเสิร์ตแรก" style="width:100%;height:100%;object-fit:cover;" />
+                  </div>
+                  <div class="tl-date">30 สิงหาคม 2567 🎵</div>
+                  <h3>คอนเสิร์ตแรกของเรา 🎤</h3>
+                  <p>ได้ดูด้วยกัน แถมมีเค้าเล่นด้วย อิอิ 🎵</p>
+                </div>
+              </div>
+              <div class="timeline-item right">
+                <div class="timeline-dot">🌈</div>
+                <div class="timeline-card glass-panel glow-card" data-title="การเดินทางตลอด 1 ปี 🌈"
+                  data-date="ตลอดปีที่ผ่านมา"
+                  data-desc="ผ่านอะไรมาเยอะมากเนาะ ทั้งเรื่องดีเรื่องร้าย แต่ก็กุมมืออยู่เคียงข้างกันเสมอ ขอบคุณที่ไม่เคยปล่อยมือกัน 💕"
+                  data-img="moment6">
+                  <div class="tl-moment-img" id="tl-img-6">
+                    <img src="1 ปีที่ผ่านมา.jpg" alt="1 ปีที่ผ่านมา" style="width:100%;height:100%;object-fit:cover;" />
+                  </div>
+                  <div class="tl-date">ตลอดปีที่ผ่านมา 🌟</div>
+                  <h3>การเดินทางตลอด 1 ปี 🌈</h3>
+                  <p>ผ่านอะไรมาเยอะเนาะ แต่ก็เคียงข้างกันเสมอ 💕</p>
+                </div>
+              </div>
+              <div class="timeline-item left">
+                <div class="timeline-dot">🎉</div>
+                <div class="timeline-card glass-panel glow-card" data-title="ครบรอบ 1 ปี 🎉"
+                  data-date="3 สิงหาคม 2568"
+                  data-desc="อยู่ด้วยกันครบ 1 ปี สนุกและมีความสุขมาก ขอบคุณสำหรับทุกรอยยิ้ม อยู่ด้วยกันไปนานๆ เลยนะที่รัก 💖"
+                  data-img="moment7">
+                  <div class="tl-moment-img" id="tl-img-7">
+                    <img src="ครบรอบ 1 ปี.jpg" alt="ครบรอบ 1 ปี" style="width:100%;height:100%;object-fit:cover;" />
+                  </div>
+                  <div class="tl-date">3 สิงหาคม 2568 🎊</div>
+                  <h3>ครบรอบ 1 ปี 🎉</h3>
+                    <p>1 ปีผ่านไปด้วยกัน จับมือไปต่ออีกนานๆ นะ 💕</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 3. CALENDAR VIEW (ปฏิทินแห่งความรัก) -->
+          <div id="page-calendar" class="app-page">
+            <div class="page-scroll-content">
+              <div class="section-header">
+                <span class="section-badge">📅</span>
+                <h2 class="section-title gradient-text">ปฏิทินหัวใจ (Love Calendar)</h2>
+                <p class="section-sub">แตะวันที่ถูกวงไว้เพื่อดูความหมายแสนพิเศษ ❤️</p>
+              </div>
+
+              <div class="calendar-card glass-panel glow-card">
+                <div class="calendar-header">
+                  <span class="cal-month-title gradient-text">วันพิเศษของ Dan & Kaimook 💖</span>
+                </div>
+                <div class="special-dates-list">
+                  <div class="special-date-item highlight-anniversary" data-title="💑 วันครบรอบ (3 สิงหาคม)"
+                    data-desc="วันที่ลืมไม่ได้ วันที่เริ่มต้นทุกสิ่งดีๆ ร่วมกัน 💕 ครบรอบ 2 ปีแล้วนะที่รัก!">
+                    <div class="special-date-left">
+                      <span class="special-date-emoji">💑</span>
+                      <div>
+                        <div class="special-date-name">วันครบรอบของเรา</div>
+                        <div class="special-date-sub">3 สิงหาคม 2567</div>
+                      </div>
+                    </div>
+                    <span class="special-date-badge red">ครบรอบ</span>
+                  </div>
+                  <div class="special-date-item highlight-birthday" data-title="🎂 วันเกิดไอ่บี๋ (3 ตุลาคม)"
+                    data-desc="ไอ่เด้กตุลาเหมือนกันเลยยย 🎉 สุขสันต์วันเกิดนะคนดี ขอบคุณที่เกิดมาเติมเต็มชีวิต 🎂">
+                    <div class="special-date-left">
+                      <span class="special-date-emoji">🎂</span>
+                      <div>
+                        <div class="special-date-name">วันเกิดไอ่บี๋ 🥰</div>
+                        <div class="special-date-sub">3 ตุลาคม</div>
+                      </div>
+                    </div>
+                    <span class="special-date-badge pink">วันเกิด</span>
+                  </div>
+                  <div class="special-date-item highlight-firstmeet" data-title="🎂 วันเกิดแดน (25 ตุลาคม)"
+                    data-desc="น้องและไงงงง 🎉 สุขสันต์วันเกิดตัวเองด้วย 🎂">
+                    <div class="special-date-left">
+                      <span class="special-date-emoji">🎂</span>
+                      <div>
+                        <div class="special-date-name">วันเกิดแดน 🎉</div>
+                        <div class="special-date-sub">25 ตุลาคม</div>
+                      </div>
+                    </div>
+                    <span class="special-date-badge gold">วันเกิด</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="calendar-legend glass-panel">
+                <div class="legend-item"><span class="circle-legend red"></span> 💑 วันครบรอบ</div>
+                <div class="legend-item"><span class="circle-legend pink"></span> 🎂 วันเกิดไอ่บี๋</div>
+                <div class="legend-item"><span class="circle-legend gold"></span> 🎂 วันเกิดแดน</div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 4. REASONS & STARRY MEMORY VIEW (🌌 จักรวาลเหตุผลที่รักเธอ) -->
+          <div id="page-reasons" class="app-page">
+            <div class="page-scroll-content">
+              <div class="section-header">
+                <span class="section-badge">🌌</span>
+                <h2 class="section-title gradient-text">จักรวาลเหตุผลที่รักเธอ</h2>
+                <p class="section-sub">แตะดวงดาวในจักรวาลความทรงจำเพื่ออ่านความรู้สึก ⭐</p>
+              </div>
+
+              <!-- Redesigned Gorgeous Crystal Reasons Galaxy Room -->
+              <div class="galaxy-memory-container glass-panel glow-card">
+                <div class="galaxy-orbital-glow"></div>
+                <div class="sky-stars-container" id="sky-stars-container">
+                  <!-- Interactive Crystal Orbs JS -->
+                </div>
+              </div>
+
+              <div class="galaxy-action-bar" style="margin-top: 14px;">
+                <button class="quiz-start-btn glass-btn glow-btn" id="random-reason-btn" style="width:100%;">✨
+                  สุ่มดาวความทรงจำหัวใจ 💖</button>
+              </div>
+
+              <div class="reason-display-card glass-panel glow-card hidden" id="reason-display-card"
+                style="margin-top: 14px;">
+                <div class="card-heart" id="reason-card-icon">💝</div>
+                <h4 id="reason-card-title" class="gradient-text">เหตุผลที่รักบี๋ 💕</h4>
+                <p id="reason-card-text">แตะดวงดาวด้านบนเพื่อเปิดดูเหตุผลนะ!</p>
+              </div>
+
+              <!-- LOVE COUPON & DATE SPINNER CARD -->
+              <div class="love-spinner-card glass-panel glow-card" style="margin-top: 20px;">
+                <div class="card-badge">🎰 Surprise Feature</div>
+                <h3 class="gradient-text">สุ่มคูปองตามใจแฟน 🎁</h3>
+                <p class="card-sub-text">วันนี้ทำอะไรกันดีนะ? แตะปุ่มสุ่มเพื่อลุ้นคูปองพิเศษ!</p>
+                <div class="coupon-result-box glass-panel" id="coupon-result-box">
+                  <span class="coupon-icon" id="coupon-icon">🎁</span>
+                  <div class="coupon-title" id="coupon-title">แตะปุ่มด้านล่างเพื่อสุ่มคูปอง 💖</div>
+                </div>
+                <button class="quiz-start-btn glass-btn glow-btn" id="spin-coupon-btn"
+                  style="width:100%; margin-top:12px;">🎰 สุ่มคูปองสุดพิเศษวันนี้!</button>
+              </div>
+
+              <!-- COUPLE LOVE NOTES & WISHLIST CARD -->
+              <div class="couple-notes-card glass-panel glow-card" style="margin-top: 20px; margin-bottom: 30px;">
+                <div class="card-badge">📝 Couple Notes</div>
+                <h3 class="gradient-text">สมุดโน้ตสัญญาของเรา 💖</h3>
+                <p class="card-sub-text">เขียนความรู้สึกหรือสิ่งที่อยากทำร่วมกัน (เซฟไว้อยู่ตลอดนะ!)</p>
+                <div class="notes-input-group">
+                  <textarea id="love-note-input" class="glass-textarea"
+                    placeholder="พิมพ์ความในใจ โน้ตเตือนความจำ หรือสัญญาของเราที่นี่... 💕" rows="3"></textarea>
+                  <button class="hero-cta-btn glass-btn glow-btn" id="save-note-btn"
+                    style="width:100%; margin-top:8px;">💾 บันทึกโน้ตรักลงเครื่อง ✨</button>
+                </div>
+                <div id="saved-notes-list" class="saved-notes-list">
+                  <!-- Saved notes rendered by JS -->
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 5. ELEGANT LOVE LETTER (💌 จดหมายถึงเธอ) -->
+          <div id="page-letter" class="app-page">
+            <div class="page-scroll-content">
+              <div class="section-header">
+                <span class="section-badge">📬</span>
+                <h2 class="section-title gradient-text">จดหมายถึงเธอ (Love Letter)</h2>
+                <p class="section-sub">แตะซองจดหมายเพื่อเปิดอ่านบันทึกความทรงจำแสนหวาน 🌸</p>
+              </div>
+
+              <!-- Sealed Envelope Glass Card -->
+              <div class="envelope-sealed-card glass-panel glow-card" id="open-love-letter-trigger">
+                <div class="wax-seal">💌</div>
+                <h3 class="gradient-text">จดหมายรักฉบับครบรอบ 💕</h3>
+                <p>บันทึกความในใจถึงคนพิเศษที่สุด</p>
+                <button class="hero-cta-btn glass-btn glow-btn">แตะเพื่อเปิดอ่านจดหมาย ✉️</button>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 6. MASONRY PHOTO & VIDEO GALLERY (📸 รูปภาพ & วิดีโอ) -->
+          <div id="page-gallery" class="app-page">
+            <div class="page-scroll-content">
+              <div class="section-header">
+                <span class="section-badge">📸</span>
+                <h2 class="section-title gradient-text">แกลเลอรี่ความทรงจำ</h2>
+                <p class="section-sub">รูปคู่และวิดีโอของเรา | แตะเพื่อซูมขยายภาพใหญ่ ✨</p>
+              </div>
+
+              <!-- Gallery Slideshow -->
+              <div class="gallery-slideshow glass-panel glow-card" id="gallery-slideshow">
+                <div class="slideshow-track" id="slideshow-track">
+                  <!-- Slides will be populated by JS or manual upload -->
+                  <div class="slide-placeholder active-slide">
+                    <div class="slide-emoji">💕</div>
+                    <p>อัปโหลดรูปของเราก่อนเลย!</p>
+                  </div>
+                </div>
+                <div class="slideshow-dots" id="slideshow-dots"></div>
+                <button class="slide-prev glass-btn" id="slide-prev">‹</button>
+                <button class="slide-next glass-btn" id="slide-next">›</button>
+              </div>
+
+              <!-- File upload action button -->
+              <div class="upload-section">
+                <input type="file" id="polaroid-file-input" accept="image/*" multiple class="hidden" />
+                <button class="polaroid-upload-btn glass-btn glow-btn" id="polaroid-upload-trigger">📸
+                  อัปโหลดรูปถ่ายของเรา ➕</button>
+              </div>
+
+            </div>
+          </div>
+
+      </main>
+
+      <!-- ===== FLOATING CELEBRATION CONFETTI BUTTON ===== -->
+      <button class="confetti-btn glass-btn glow-btn" id="confetti-btn" title="ฉลอง! 🎉">🥳</button>
+
+      <!-- ===== APP BOTTOM DOCK NAVIGATION ===== -->
+      <nav class="bottom-nav-dock glass-header">
+        <button class="nav-dock-item active" data-target="page-home">
+          <span class="nav-dock-icon">🏠</span>
+          <span class="nav-dock-text">หน้าแรก</span>
+        </button>
+        <button class="nav-dock-item" data-target="page-timeline">
+          <span class="nav-dock-icon">📅</span>
+          <span class="nav-dock-text">เรื่องราว</span>
+        </button>
+        <button class="nav-dock-item" data-target="page-calendar">
+          <span class="nav-dock-icon">🗓️</span>
+          <span class="nav-dock-text">ปฏิทิน</span>
+        </button>
+
+        <!-- Central Floating Love Letter Button -->
+        <button class="nav-dock-item nav-dock-center" data-target="page-letter">
+          <div class="center-heart glow-btn">💌</div>
+        </button>
+
+        <button class="nav-dock-item" data-target="page-reasons">
+          <span class="nav-dock-icon">🌌</span>
+          <span class="nav-dock-text">เหตุผลที่รัก</span>
+        </button>
+        <button class="nav-dock-item" data-target="page-gallery">
+          <span class="nav-dock-icon">📸</span>
+          <span class="nav-dock-text">รูปภาพ</span>
+        </button>
+      </nav>
+
+    </div><!-- /app-wrapper -->
+
+    <!-- Fullscreen Clean Love Letter Modal -->
+    <div class="love-letter-modal hidden" id="love-letter-modal">
+      <div class="love-letter-modal-overlay" id="love-letter-overlay"></div>
+      <div class="love-letter-modal-paper glass-panel glow-card">
+        <button class="close-modal-x-btn" id="close-letter-modal-x">✕</button>
+        <div class="love-letter-modal-header">
+          <span class="modal-date-badge">บันทึก ณ วันครบรอบ 2 ปี 💕</span>
+          <h3 class="gradient-text thai-calligraphy">ถึง... ไอ่บี๋อ้วนนนน 🌸</h3>
+        </div>
+        <div class="love-letter-modal-body">
+          <p>
+            สวัสดีไอ่หมูอ้วน วันนี้เป็นวันที่เราครบรอบ 2 ปีแล้ว ผ่านมาไว ได้ทำอะไรด้วยกันหลายอย่าง ทั้งดีทั้งไม่ดี 😂
+          </p>
+          <p>
+            เรื่องดีๆ ก็มีให้จำหลายเรื่อง เรื่องไม่ดีก็หลายเรื่องทั้งไอนิว ค่ายผู้นำ เอาเป็นว่าไม่พูดดีกว่าเนาะะ 😂😂
+            เนี่ยชอบทำให้เค้าเป็นคนแบบนี้ได้ไง
+          </p>
+          <p>
+            มาๆ เข้าเรื่องดีกว่า 2 ปีก็แอบนานอยู่ ผ่านเรื่องแย่ๆ มาด้วยกัน พากันไปแข่งได้รางวัลดีๆ มา
+            ของคุณที่ช่วยสนับสนุนกันและกันตลอดมานะคะ ขอบคุณมากๆๆ เลย 💕
+          </p>
+          <p>
+            ที่คอยซัพพอร์ต ให้กำลังใจ ในตอนที่เศร้าหมดไฟ ขอบคุณที่เลี้ยงเค้าจนน้ำหนักขึ้นมา 15-16 โล อันนี้น่าจะไม่ดี 😂
+            พาลดมั่งดิ พาเค้าไปกินเหล้า ลากเค้ากลับห้อง 😆 แต้งกิ้วมากๆ เวลาอ้อนอะไรให้หมดเลย 🥰
+          </p>
+          <p>
+            จิงจัง เค้าร้ากแร้ เห้ย รีกเธอ เห้ย รักบี๋ ชอบเล่นแบบนี้ 😂 หยอกๆ จริงจังๆ เค้าร้ากแร้ รักบี๋น้าา รักมากๆ
+            เลย 💖
+          </p>
+          <p>
+            ขอบคุณตลอดมาที่คอยซัพพอร์ต ทั้งตอนนี้ ก่อนหน้านี้ และก็อนาคตเลยนะ รักมากๆๆๆ เค้าจะรักบี๋ตลอดไป
+            อยู่ด้วยกันนานๆ เวลาหมดไฟ เค้าจะอยู่ตรงนี้เสมอนะ ไม่หนีไปไหนน้าา 💋
+          </p>
+          <p>
+            ขอโทษที่ซึ้งแต่ยังตลกตลอดเลย 😂 ร้ากเสมอนะคะที่รักของเค้า 💗
+          </p>
+        </div>
+        <div class="love-letter-modal-footer">
+          <div class="letter-signature-text gradient-text thai-calligraphy">
+            รักสุดหัวใจ,<br />
+            <span>คนที่รักบี๋เสมอ 💗</span>
+          </div>
+          <button class="close-letter-modal-btn glass-btn glow-btn" id="close-letter-modal-btn">✕ พับเก็บจดหมาย</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fullscreen Image Zoom Lightbox Modal -->
+    <div class="lightbox-modal hidden" id="lightbox-modal">
+      <div class="lightbox-overlay" id="lightbox-overlay"></div>
+      <div class="lightbox-content glass-panel glow-card">
+        <button class="close-lightbox-btn" id="close-lightbox">✕</button>
+        <div class="lightbox-body" id="lightbox-body">
+          <div class="lightbox-img-frame" id="lightbox-img-frame"></div>
+          <p class="lightbox-caption" id="lightbox-caption">คำอธิบายภาพ...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calendar Event Details Modal -->
+    <div class="reason-overlay hidden" id="cal-modal">
+      <div class="reason-3d-card glass-panel glow-card" id="cal-modal-card">
+        <div class="card-heart">❤️</div>
+        <h3 id="cal-modal-title" class="gradient-text">ความทรงจำปฏิทิน</h3>
+        <p id="cal-modal-desc">รายละเอียดวันสำคัญ...</p>
+        <button class="card-close-btn glass-btn glow-btn" id="cal-modal-close">ปิด ✕</button>
+      </div>
+    </div>
+
+  </div><!-- /app-frame -->
+
+  <script src="script.js"></script>
+</body>
+
+</html>
