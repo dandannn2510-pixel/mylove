@@ -8,10 +8,10 @@ const CONFIG = {
   PASSCODE: "0308",
   LOVE_START_DATE: new Date("2024-08-03T00:00:00"),
   PLAYLIST: [
-    { title: "ชอบตัวเองตอนอยู่กับเธอ - Billkin 💖", ytid: "DhtKoB4qdm4" },
-    { title: "คู่ชีวิต - COCKTAIL 🎸", ytid: "cnRtjG6lLHU" },
-    { title: "จังหวะตกหลุมรัก - DIDIxDADA 🎵", ytid: "y5qMnKY9VR8" },
-    { title: "ยินดี - Sarah Salola 🌸", ytid: "uRopiMriHsA" }
+    { title: "ชอบตัวเองตอนอยู่กับเธอ - Billkin 💖", ytid: "DhtKoB4qdm4", url: "https://assets.mixkit.co/music/preview/mixkit-beautiful-dream-preview-583.mp3" },
+    { title: "คู่ชีวิต - COCKTAIL 🎸", ytid: "cnRtjG6lLHU", url: "https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3" },
+    { title: "จังหวะตกหลุมรัก - DIDIxDADA 🎵", ytid: "y5qMnKY9VR8", url: "https://assets.mixkit.co/music/preview/mixkit-feeling-happy-5.mp3" },
+    { title: "ยินดี - Sarah Salola 🌸", ytid: "uRopiMriHsA", url: "https://assets.mixkit.co/music/preview/mixkit-sweet-love-514.mp3" }
   ]
 };
 
@@ -66,26 +66,24 @@ window.onYouTubeIframeAPIReady = function() {
   }
 };
 
-// ===== MOBILE AUDIO ENGINE UNLOCKER (100% AD-FREE) =====
+// ===== MOBILE AUDIO ENGINE UNLOCKER (ROBUST MULTI-ENGINE) =====
 function unlockAudioEngine() {
-  if (audioEngineUnlocked) return;
-  audioEngineUnlocked = true;
-
   const bgAudio = document.getElementById("bg-audio-fallback");
   if (bgAudio) {
     bgAudio.play().then(() => {
       isPlaying = true;
       updateMusicUI(true);
-    }).catch(() => {
-      if (isYtReady && ytPlayer && typeof ytPlayer.playVideo === "function") {
-        ytPlayer.playVideo();
-      }
-    });
-  } else if (isYtReady && ytPlayer && typeof ytPlayer.playVideo === "function") {
-    ytPlayer.playVideo();
-    isPlaying = true;
-    updateMusicUI(true);
+    }).catch(() => {});
   }
+
+  if (isYtReady && ytPlayer && typeof ytPlayer.playVideo === "function") {
+    try {
+      ytPlayer.playVideo();
+      isPlaying = true;
+      updateMusicUI(true);
+    } catch (e) {}
+  }
+  audioEngineUnlocked = true;
 }
 
 // ===== PASSCODE SCREEN CONTROLLER =====
@@ -527,7 +525,6 @@ function initStarryReasons() {
 // ===== REALISTIC 3D LOVE LETTER ENVELOPE MODAL =====
 function initLoveLetterModal() {
   const trigger = document.getElementById("open-love-letter-trigger");
-  const envBox = document.getElementById("envelope-3d-box");
   const envFlap = document.getElementById("envelope-flap");
   const envLetter = document.getElementById("envelope-letter");
   const modal = document.getElementById("love-letter-modal");
@@ -537,42 +534,30 @@ function initLoveLetterModal() {
 
   if (!trigger || !modal) return;
 
-  let isOpening = false;
+  function openEnvelopeSequence(e) {
+    if (e) e.stopPropagation();
 
-  function openEnvelopeSequence() {
-    if (isOpening) return;
-    isOpening = true;
-
-    // 1. Play wax seal burst
-    createHeartBurst(window.innerWidth / 2, window.innerHeight / 2 + 30, 20);
-
-    // 2. Flip 3D Envelope Flap Open
     if (envFlap) envFlap.classList.add("flap-open");
-    
-    // 3. Slide letter out of pocket after flap starts opening
-    setTimeout(() => {
-      if (envLetter) envLetter.classList.add("letter-slide-out");
-      launchFireworks(window.innerWidth / 2, window.innerHeight / 3, 25);
-    }, 250);
+    if (envLetter) envLetter.classList.add("letter-slide-out");
 
-    // 4. Open fullscreen romantic paper modal
+    createHeartBurst(window.innerWidth / 2, window.innerHeight / 2, 20);
+    launchFireworks(window.innerWidth / 2, window.innerHeight / 3, 25);
+
     setTimeout(() => {
       modal.classList.remove("hidden");
       gsap.fromTo(".love-letter-modal-paper", 
-        { scale: 0.75, opacity: 0, y: 40, rotateX: 15 }, 
-        { scale: 1, opacity: 1, y: 0, rotateX: 0, duration: 0.45, ease: "back.out(1.4)" }
+        { scale: 0.8, opacity: 0, y: 30 }, 
+        { scale: 1, opacity: 1, y: 0, duration: 0.4, ease: "back.out(1.4)" }
       );
-      createHeartBurst(window.innerWidth / 2, window.innerHeight / 2, 15);
-      isOpening = false;
-    }, 550);
+    }, 200);
   }
 
   function closeModal() {
     gsap.to(".love-letter-modal-paper", {
       scale: 0.8,
       opacity: 0,
-      y: 30,
-      duration: 0.3,
+      y: 20,
+      duration: 0.25,
       onComplete: () => {
         modal.classList.add("hidden");
         if (envFlap) envFlap.classList.remove("flap-open");
