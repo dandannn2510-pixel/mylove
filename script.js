@@ -528,9 +528,12 @@ function initStarryReasons() {
   }
 }
 
-// ===== CLEAN FULLSCREEN LOVE LETTER MODAL =====
+// ===== REALISTIC 3D LOVE LETTER ENVELOPE MODAL =====
 function initLoveLetterModal() {
   const trigger = document.getElementById("open-love-letter-trigger");
+  const envBox = document.getElementById("envelope-3d-box");
+  const envFlap = document.getElementById("envelope-flap");
+  const envLetter = document.getElementById("envelope-letter");
   const modal = document.getElementById("love-letter-modal");
   const overlay = document.getElementById("love-letter-overlay");
   const closeBtn = document.getElementById("close-letter-modal-btn");
@@ -538,23 +541,51 @@ function initLoveLetterModal() {
 
   if (!trigger || !modal) return;
 
-  function openModal() {
-    modal.classList.remove("hidden");
-    gsap.fromTo(".love-letter-modal-paper", { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.4)" });
-    launchFireworks(window.innerWidth / 2, window.innerHeight / 3, 35);
-    createHeartBurst(window.innerWidth / 2, window.innerHeight / 2, 15);
+  let isOpening = false;
+
+  function openEnvelopeSequence() {
+    if (isOpening) return;
+    isOpening = true;
+
+    // 1. Play wax seal burst
+    createHeartBurst(window.innerWidth / 2, window.innerHeight / 2 + 30, 20);
+
+    // 2. Flip 3D Envelope Flap Open
+    if (envFlap) envFlap.classList.add("flap-open");
+    
+    // 3. Slide letter out of pocket after flap starts opening
+    setTimeout(() => {
+      if (envLetter) envLetter.classList.add("letter-slide-out");
+      launchFireworks(window.innerWidth / 2, window.innerHeight / 3, 25);
+    }, 250);
+
+    // 4. Open fullscreen romantic paper modal
+    setTimeout(() => {
+      modal.classList.remove("hidden");
+      gsap.fromTo(".love-letter-modal-paper", 
+        { scale: 0.75, opacity: 0, y: 40, rotateX: 15 }, 
+        { scale: 1, opacity: 1, y: 0, rotateX: 0, duration: 0.45, ease: "back.out(1.4)" }
+      );
+      createHeartBurst(window.innerWidth / 2, window.innerHeight / 2, 15);
+      isOpening = false;
+    }, 550);
   }
 
   function closeModal() {
     gsap.to(".love-letter-modal-paper", {
       scale: 0.8,
       opacity: 0,
+      y: 30,
       duration: 0.3,
-      onComplete: () => modal.classList.add("hidden")
+      onComplete: () => {
+        modal.classList.add("hidden");
+        if (envFlap) envFlap.classList.remove("flap-open");
+        if (envLetter) envLetter.classList.remove("letter-slide-out");
+      }
     });
   }
 
-  trigger.addEventListener("click", openModal);
+  trigger.addEventListener("click", openEnvelopeSequence);
   closeBtn.addEventListener("click", closeModal);
   closeX.addEventListener("click", closeModal);
   overlay.addEventListener("click", closeModal);

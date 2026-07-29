@@ -796,40 +796,167 @@ body {
 
 .card-heart { font-size: 2.6rem; margin-bottom: 8px; }
 
+/* ===== THAI TYPOGRAPHY & WORD BREAK SAFE RULES ===== */
+body, html, input, button, textarea, p, span, h1, h2, h3, h4, h5, h6 {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  line-height: 1.6;
+}
+
+p, span, h1, h2, h3, h4 {
+  text-wrap: pretty;
+}
+
+.love-letter-modal-body p {
+  margin-bottom: 14px;
+  line-height: 1.8;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  text-align: left;
+}
+
 /* =============================================
-   ELEGANT SEALED LOVE LETTER & MODAL
+   3D REALISTIC INTERACTIVE ENVELOPE
    ============================================= */
-.envelope-sealed-card {
-  text-align: center;
-  padding: 40px 24px;
-  cursor: pointer;
+.interactive-envelope-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 10px;
+  margin-top: 14px;
+  margin-bottom: 30px;
+  cursor: pointer;
+  perspective: 1000px;
+  pointer-events: auto !important;
 }
 
-.wax-seal {
-  font-size: 4rem;
-  margin-bottom: 14px;
-  animation: pulseSeal 2s ease-in-out infinite alternate;
+.envelope-3d-box {
+  position: relative;
+  width: 280px;
+  height: 180px;
+  background: linear-gradient(135deg, #2D1B4E, #1E1B4B);
+  border-radius: 16px;
+  border: 1.5px solid rgba(255, 143, 171, 0.4);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(255, 42, 122, 0.25);
+  transform-style: preserve-3d;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
-@keyframes pulseSeal {
-  0% { transform: scale(1); filter: drop-shadow(0 0 10px var(--pink-deep)); }
-  100% { transform: scale(1.1); filter: drop-shadow(0 0 25px var(--pink-deep)); }
+.interactive-envelope-container:hover .envelope-3d-box {
+  transform: translateY(-5px) rotateX(5deg);
+  box-shadow: 0 20px 45px rgba(255, 42, 122, 0.4);
 }
 
-.envelope-sealed-card h3 {
+.envelope-flap-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 100px;
+  background: linear-gradient(180deg, #3B2163, #2A174A);
+  clip-path: polygon(0 0, 50% 100%, 100% 0);
+  transform-origin: top center;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 4;
+  border-top: 1px solid rgba(255, 143, 171, 0.4);
+}
+
+.envelope-flap-top.flap-open {
+  transform: rotateX(-180deg);
+  z-index: 1;
+}
+
+.envelope-pocket {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 130px;
+  background: linear-gradient(0deg, rgba(42, 23, 74, 0.95), rgba(30, 27, 75, 0.9));
+  clip-path: polygon(0 40px, 50% 0, 100% 40px, 100% 100%, 0 100%);
+  z-index: 3;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  border: 1px solid rgba(255, 143, 171, 0.25);
+}
+
+.envelope-letter-preview {
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  right: 20px;
+  height: 135px;
+  background: linear-gradient(135deg, #FFF9F2, #FFE4EC);
+  border-radius: 12px;
+  padding: 16px 14px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #4A1525;
+}
+
+.envelope-letter-preview.letter-slide-out {
+  transform: translateY(-75px) scale(1.05);
+}
+
+.preview-title {
   font-family: 'Charm', 'Dancing Script', cursive;
-  font-size: 2.2rem;
-  margin-bottom: 6px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #9D174D;
+  margin-bottom: 4px;
 }
 
-.envelope-sealed-card p {
-  font-size: 0.85rem;
-  color: var(--text-mid);
-  margin-bottom: 24px;
+.preview-sub {
+  font-size: 0.76rem;
+  color: #BE185D;
+  font-weight: 500;
+}
+
+.envelope-wax-seal {
+  position: absolute;
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #E11D48, #9F1239);
+  border: 2px solid #F43F5E;
+  box-shadow: 0 0 20px rgba(225, 29, 72, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.interactive-envelope-container:hover .envelope-wax-seal {
+  transform: translateX(-50%) scale(1.15) rotate(10deg);
+}
+
+.seal-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.seal-sparkle {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  font-size: 0.9rem;
+}
+
+.envelope-prompt-text {
+  font-size: 0.82rem;
+  color: var(--pink-light);
+  margin-top: 14px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
 
 /* FULLSCREEN LOVE LETTER MODAL */
